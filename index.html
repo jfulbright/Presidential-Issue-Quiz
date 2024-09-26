@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Presidential Candidate Issue Quiz</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Responsive Meta Tag -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+        h1 {
+            text-align: center;
+        }
+        .question {
+            margin-bottom: 30px;
+        }
+        .question h3 {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        .options {
+            margin-left: 10px;
+        }
+        .option {
+            margin-bottom: 20px;
+        }
+        .option label {
+            display: flex;
+            align-items: flex-start;
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        .option input[type="radio"] {
+            margin-right: 10px;
+            margin-top: 3px;
+            transform: scale(1.2); /* Larger radio buttons for touch screens */
+        }
+        .pros-cons {
+            margin-left: 30px; /* Increased to align with the text */
+            margin-top: 5px;
+        }
+        .pros-cons p {
+            margin: 2px 0;
+            font-size: 0.95em;
+        }
+        .pros, .cons {
+            margin-top: 5px;
+        }
+        .pros p, .cons p {
+            margin-left: 15px;
+        }
+        #submitBtn {
+            padding: 15px 25px;
+            font-size: 16px;
+            display: block;
+            margin: 0 auto;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+        #result {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #ccc;
+        }
+        #result h2 {
+            margin-top: 0;
+        }
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            body {
+                margin: 10px;
+            }
+            h1 {
+                font-size: 1.5em;
+            }
+            .question h3 {
+                font-size: 1em;
+            }
+            .option label {
+                font-size: 0.95em;
+            }
+            .pros-cons p {
+                font-size: 0.9em;
+            }
+            #submitBtn {
+                width: 100%;
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Presidential Candidate Issue Quiz</h1>
+    <form id="quizForm">
+        <!-- Questions will be injected here by JavaScript -->
+    </form>
+    <button id="submitBtn" onclick="calculateResult()">Submit</button>
+
+    <div id="result" style="display:none;">
+        <h2>Your Alignment Result</h2>
+        <p id="summary"></p>
+        <div id="detailedResults"></div>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "Economy: What economic policy do you prefer?",
+                options: [
+                    {
+                        text: "A) Kamala Harris's position: Support progressive taxation, including higher taxes on the wealthy and corporations to fund social programs.",
+                        candidate: "Harris",
+                        pros: [
+                            "Provides revenue for healthcare, education, and infrastructure.",
+                            "Aims to reduce income inequality."
+                        ],
+                        cons: [
+                            "Higher taxes might discourage business investment.",
+                            "Could slow economic growth."
+                        ]
+                    },
+                    {
+                        text: "B) Donald Trump's position: Advocate for tax cuts for individuals and businesses to stimulate economic growth.",
+                        candidate: "Trump",
+                        pros: [
+                            "May encourage business expansion and job creation.",
+                            "Increases take-home pay for individuals."
+                        ],
+                        cons: [
+                            "Can increase the federal deficit.",
+                            "May benefit higher-income individuals more than the middle or lower class."
+                        ]
+                    }
+                ]
+            },
+            // Include the remaining questions with candidate positions
+            // Question 2
+            {
+                question: "Healthcare: Which healthcare approach do you support?",
+                options: [
+                    {
+                        text: "A) Kamala Harris's position: Expand access to affordable healthcare, potentially through a public option or Medicare for All.",
+                        candidate: "Harris",
+                        pros: [
+                            "Aims to ensure all Americans have healthcare coverage.",
+                            "Could reduce overall healthcare costs for individuals."
+                        ],
+                        cons: [
+                            "May require increased government spending.",
+                            "Potential disruption to existing insurance plans."
+                        ]
+                    },
+                    {
+                        text: "B) Donald Trump's position: Repeal or replace the Affordable Care Act and promote private healthcare solutions.",
+                        candidate: "Trump",
+                        pros: [
+                            "Encourages competition and innovation in the private sector.",
+                            "Offers more choices for consumers."
+                        ],
+                        cons: [
+                            "Could result in loss of coverage for some individuals.",
+                            "May not protect individuals with pre-existing conditions adequately."
+                        ]
+                    }
+                ]
+            },
+            // Continue adding Questions 3 to 10 in the same format
+            {
+                question: "Climate Change: How should the U.S. address environmental issues?",
+                options: [
+                    {
+                        text: "A) Kamala Harris's position: Rejoin international climate agreements and invest in renewable energy.",
+                        candidate: "Harris",
+                        pros: [
+                            "Addresses global climate change collaboratively.",
+                            "Promotes growth in renewable energy sectors."
+                        ],
+                        cons: [
+                            "Requires significant investment.",
+                            "May impact jobs in traditional energy industries."
+                        ]
+                    },
+                    {
+                        text: "B) Donald Trump's position: Prioritize energy independence through traditional energy sources like oil and coal.",
+                        candidate: "Trump",
+                        pros: [
+                            "Supports jobs in existing energy industries.",
+                            "Aims for U.S. energy independence."
+                        ],
+                        cons: [
+                            "May contribute to environmental pollution.",
+                            "Could hinder progress on reducing carbon emissions."
+                        ]
+                    }
+                ]
+            },
+            // Questions 4 to 10 continue here...
+            // Please ensure to include all the questions as in the previous code
+            {
+                question: "Immigration: What is your stance on immigration policy?",
+                options: [
+                    {
+                        text: "A) Kamala Harris's position: Support comprehensive immigration reform with a pathway to citizenship for undocumented immigrants.",
+                        candidate: "Harris",
+                        pros: [
+                            "Aims to integrate immigrants into society.",
+                            "Addresses labor shortages in certain sectors."
+                        ],
+                        cons: [
+                            "May be seen as rewarding illegal entry.",
+                            "Could increase competition for jobs."
+                        ]
+                    },
+                    {
+                        text: "B) Donald Trump's position: Enforce strict immigration laws and build a wall along the southern border.",
+                        candidate: "Trump",
+                        pros: [
+                            "Aims to enhance national security.",
+                            "Seeks to protect jobs for American citizens."
+                        ],
+                        cons: [
+                            "Expensive to implement and maintain.",
+                            "May strain relations with neighboring countries."
+                        ]
+                    }
+                ]
+            },
+            {
+                question: "Education: How should higher education be funded?",
+                options: [
+                    {
+                        text: "A) Kamala Harris's position: Advocate for tuition-free public college for families earning under a certain income threshold.",
+                        candidate: "Harris",
+                        pros: [
+                            "Increases access to higher education.",
+                            "Could reduce student debt burden."
+                        ],
+                        cons: [
+                            "Requires increased government spending.",
+                            "May lead to overcrowding in public institutions."
+                        ]
+                    },
+                    {
+                        text: "B) Donald Trump's position: Promote school choice and expand voucher programs.",
+                        candidate: "Trump",
+                        pros: [
+                            "Provides families with more education options.",
+                            "Encourages competition among schools."
+                        ],
+                        cons: [
+                            "May divert funds from public schools.",
+                            "Could increase inequality in education quality."
+                        ]
+                    }
+                ]
+            },
+            {
+                question: "Gun Control: What is your position on gun legislation?",
+                options: [
+                    {
+                        text: "A) Kamala Harris's position: Implement stricter gun control measures, including universal background checks and assault weapon bans.",
+                        candidate: "Harris",
+                        pros: [
+                            "Aims to reduce gun violence and mass shootings.",
+                            "Could prevent firearms from reaching high-risk individuals."
+                        ],
+                        cons: [
+                            "Viewed by some as infringing on Second Amendment rights.",
+                            "May not address root causes of violence."
+                        ]
+                    },
+                    {
+                        text: "B) Donald Trump's position: Protect Second Amendment rights and oppose additional gun control legislation.",
+                        candidate: "Trump",
+                        pros: [
+                            "Upholds constitutional rights.",
+                            "Allows individuals to defend themselves."
+                        ],
+                        cons: [
+                            "May not prevent firearms from reaching dangerous individuals.",
+                            "Potentially increases risk of gun-related incidents."
+                        ]
+                    }
+                ]
+            },
+            {
+                question: "Foreign Policy: How should the U.S. engage with the world?",
+                options: [
+                    {
+                        text: "A) Kamala Harris's position: Strengthen alliances and engage in diplomatic solutions through international organizations.",
+                        candidate: "Harris",
+                        pros: [
+                            "Promotes global cooperation.",
+                            "Can lead to peaceful resolutions of conflicts."
+                        ],
+                        cons: [
+                            "May limit U.S. autonomy in decision-making.",
+                            "Requires commitment of resources to international causes."
+                        ]
+                    },
+                    {
+                        text: "B) Donald Trump's position: Adopt an 'America First' policy, prioritizing U.S. interests and negotiating bilateral agreements.",
+                        candidate: "Trump",
+                        pros: [
+                            "Aims to secure favorable terms for the U.S.",
+                            "Reduces involvement in international conflicts."
+                        ],
+                        cons: [
+                            "Can strain relationships with allies.",
+                            "May reduce global influence."
+                        ]
+                    }
+                ]
+            },
+            {
+                question: "Social Issues: What is your stance on social justice and equality?",
+                options: [
+                    {
+                        text: "A) Kamala Harris's position: Support policies that address systemic racism and promote LGBTQ+ rights.",
+                        candidate: "Harris",
+                        pros: [
+                            "Promotes equality and nondiscrimination.",
+                            "Aims to protect marginalized communities."
+                        ],
+                        cons: [
+                            "May conflict with certain religious or cultural beliefs.",
+                            "Could require significant policy changes."
+                        ]
+                    },
+                    {
+                        text: "B) Donald Trump's position: Emphasize traditional values and oppose policies seen as politically correct.",
+                        candidate: "Trump",
+                        pros: [
+                            "Appeals to individuals valuing traditional social norms.",
+                            "Reduces government intervention in social issues."
+                        ],
+                        cons: [
+                            "May not address discrimination.",
+                            "Could marginalize certain groups."
+                        ]
+                    }
+                ]
+            },
+            {
+                question: "Criminal Justice: How should the criminal justice system be reformed?",
+                options: [
+                    {
+                        text: "A) Kamala Harris's position: Promote criminal justice reform, including ending cash bail and reducing mandatory minimum sentences.",
+                        candidate: "Harris",
+                        pros: [
+                            "Aims to address systemic inequalities.",
+                            "Could reduce prison overcrowding."
+                        ],
+                        cons: [
+                            "May be perceived as being soft on crime.",
+                            "Requires restructuring of legal systems."
+                        ]
+                    },
+                    {
+                        text: "B) Donald Trump's position: Support strict law enforcement policies and increased funding for police.",
+                        candidate: "Trump",
+                        pros: [
+                            "Emphasizes law and order.",
+                            "Aims to reduce crime through deterrence."
+                        ],
+                        cons: [
+                            "May not address underlying causes of crime.",
+                            "Could exacerbate tensions between communities and law enforcement."
+                        ]
+                    }
+                ]
+            },
+            {
+                question: "Abortion: What are your views on abortion rights?",
+                options: [
+                    {
+                        text: "A) Kamala Harris's position: Uphold Roe v. Wade and protect access to abortion services.",
+                        candidate: "Harris",
+                        pros: [
+                            "Supports women's reproductive rights.",
+                            "Ensures access to safe medical procedures."
+                        ],
+                        cons: [
+                            "Conflicts with beliefs that life begins at conception.",
+                            "Raises moral and ethical concerns for some."
+                        ]
+                    },
+                    {
+                        text: "B) Donald Trump's position: Restrict abortion rights and appoint pro-life justices to the Supreme Court.",
+                        candidate: "Trump",
+                        pros: [
+                            "Aligns with pro-life values.",
+                            "Seeks to protect unborn life."
+                        ],
+                        cons: [
+                            "Limits women's reproductive choices.",
+                            "May lead to unsafe, illegal abortions."
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        const quizForm = document.getElementById('quizForm');
+
+        function loadQuiz() {
+            quizData.forEach((item, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.classList.add('question');
+
+                const questionTitle = document.createElement('h3');
+                questionTitle.innerText = `${index + 1}. ${item.question}`;
+                questionDiv.appendChild(questionTitle);
+
+                const optionsDiv = document.createElement('div');
+                optionsDiv.classList.add('options');
+
+                item.options.forEach((option, optIndex) => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.classList.add('option');
+
+                    const optionRadio = document.createElement('input');
+                    optionRadio.type = 'radio';
+                    optionRadio.name = `question${index}`;
+                    optionRadio.value = optIndex;
+                    optionRadio.id = `question${index}_option${optIndex}`;
+
+                    const optionLabel = document.createElement('label');
+                    optionLabel.htmlFor = `question${index}_option${optIndex}`;
+
+                    // Append radio button and text to label
+                    optionLabel.appendChild(optionRadio);
+                    optionLabel.appendChild(document.createTextNode(option.text));
+
+                    // Pros and Cons
+                    const prosConsDiv = document.createElement('div');
+                    prosConsDiv.classList.add('pros-cons');
+
+                    const prosDiv = document.createElement('div');
+                    prosDiv.classList.add('pros');
+                    const prosTitle = document.createElement('strong');
+                    prosTitle.innerText = "Pros:";
+                    prosDiv.appendChild(prosTitle);
+
+                    option.pros.forEach(pro => {
+                        const proItem = document.createElement('p');
+                        proItem.innerText = `• ${pro}`;
+                        prosDiv.appendChild(proItem);
+                    });
+
+                    const consDiv = document.createElement('div');
+                    consDiv.classList.add('cons');
+                    const consTitle = document.createElement('strong');
+                    consTitle.innerText = "Cons:";
+                    consDiv.appendChild(consTitle);
+
+                    option.cons.forEach(con => {
+                        const conItem = document.createElement('p');
+                        conItem.innerText = `• ${con}`;
+                        consDiv.appendChild(conItem);
+                    });
+
+                    prosConsDiv.appendChild(prosDiv);
+                    prosConsDiv.appendChild(consDiv);
+
+                    optionDiv.appendChild(optionLabel);
+                    optionDiv.appendChild(prosConsDiv);
+                    optionsDiv.appendChild(optionDiv);
+                });
+
+                questionDiv.appendChild(optionsDiv);
+                quizForm.appendChild(questionDiv);
+            });
+        }
+
+        function calculateResult() {
+            const totalQuestions = quizData.length;
+            let harrisScore = 0;
+            let trumpScore = 0;
+            let userChoices = [];
+
+            for (let i = 0; i < totalQuestions; i++) {
+                const options = document.getElementsByName(`question${i}`);
+                let selected = -1;
+                for (let j = 0; j < options.length; j++) {
+                    if (options[j].checked) {
+                        selected = options[j].value;
+                        break;
+                    }
+                }
+
+                if (selected == -1) {
+                    alert(`Please answer question ${i + 1}.`);
+                    return;
+                } else {
+                    const candidate = quizData[i].options[selected].candidate;
+                    userChoices.push({
+                        question: quizData[i].question,
+                        selectedOption: quizData[i].options[selected].text,
+                        candidate: candidate
+                    });
+                    if (candidate === "Harris") {
+                        harrisScore++;
+                    } else if (candidate === "Trump") {
+                        trumpScore++;
+                    }
+                }
+            }
+
+            displayResult(harrisScore, trumpScore, totalQuestions, userChoices);
+        }
+
+        function displayResult(harrisScore, trumpScore, totalQuestions, userChoices) {
+            const resultDiv = document.getElementById('result');
+            const summary = document.getElementById('summary');
+            const detailedResultsDiv = document.getElementById('detailedResults');
+            let resultText = "";
+
+            if (harrisScore > trumpScore) {
+                resultText = `You align more with <strong>Kamala Harris's</strong> policies (${harrisScore} out of ${totalQuestions} issues).`;
+            } else if (trumpScore > harrisScore) {
+                resultText = `You align more with <strong>Donald Trump's</strong> policies (${trumpScore} out of ${totalQuestions} issues).`;
+            } else {
+                resultText = `You have an equal alignment with both candidates (${harrisScore} out of ${totalQuestions} issues each).`;
+            }
+
+            summary.innerHTML = resultText;
+
+            // Display detailed results
+            detailedResultsDiv.innerHTML = "<h3>Your Choices and Candidate Positions:</h3>";
+            userChoices.forEach((choice, index) => {
+                const choiceDiv = document.createElement('div');
+                choiceDiv.style.marginBottom = '15px';
+
+                const questionTitle = document.createElement('p');
+                questionTitle.innerHTML = `<strong>Question ${index + 1}:</strong> ${choice.question}`;
+
+                const yourChoice = document.createElement('p');
+                yourChoice.innerHTML = `<strong>Your Choice:</strong> ${choice.selectedOption}`;
+
+                choiceDiv.appendChild(questionTitle);
+                choiceDiv.appendChild(yourChoice);
+
+                detailedResultsDiv.appendChild(choiceDiv);
+            });
+
+            resultDiv.style.display = 'block';
+            // Scroll to the result
+            resultDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Load the quiz when the page loads
+        window.onload = loadQuiz;
+    </script>
+
+</body>
+</html>
